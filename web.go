@@ -50,5 +50,6 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 	}
 
 	w.Header()["Content-type"] = []string{"text/plain"}
-	fmt.Fprintf(w, "%d\n", getCount(referrer))
+	hits := getCount(referrer)
+	fmt.Fprintf(w, "%d -> %v\n", hits, numToDigits(hits))
 }
