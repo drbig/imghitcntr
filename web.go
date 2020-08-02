@@ -14,6 +14,13 @@ var (
 	reqCount = 0
 )
 
+func runServerHTTP() {
+	bind_addr := fmt.Sprintf("%s:%d", flagBindHostname, flagBindPort)
+	http.HandleFunc("/hit", handleRequest)
+	logger.Infof("Bind to %s", bind_addr)
+	http.ListenAndServe(bind_addr, nil)
+}
+
 func handleRequest(w http.ResponseWriter, req *http.Request) {
 	reqCount++ // no locking
 	logger.WithFields(logrus.Fields{

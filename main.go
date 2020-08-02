@@ -3,12 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"net/http"
 	"os"
 )
 
 const (
-	VERSION = `0.0.1`
+	VERSION = `0.0.2`
 )
 
 var build = `UNKNOWN` // injected in Makefile
@@ -37,10 +36,6 @@ Options:
 func main() {
 	flag.Parse()
 	setupLogger()
-
-	bind_addr := fmt.Sprintf("%s:%d", flagBindHostname, flagBindPort)
-
-	http.HandleFunc("/hit", handleRequest)
-	logger.Infof("Bind to %s", bind_addr)
-	http.ListenAndServe(bind_addr, nil)
+	go runServerHTTP()
+	sigwait()
 }
