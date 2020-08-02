@@ -50,5 +50,5 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 	}
 
 	w.Header()["Content-type"] = []string{"text/plain"}
-	fmt.Fprintln(w, "Got it")
+	fmt.Fprintf(w, "%d", getCount(referrer))
 }
