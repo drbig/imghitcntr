@@ -1,6 +1,7 @@
 package main
 
 import (
+	"expvar"
 	"fmt"
 	"net/http"
 	"os"
@@ -11,7 +12,8 @@ import (
 )
 
 var (
-	reqCount = 0
+	cntReq       = expvar.NewInt("statsRequests")
+	cntReqErrors = expvar.NewInt("statsReqErrors")
 )
 
 func runServerHTTP() {
@@ -22,19 +24,31 @@ func runServerHTTP() {
 }
 
 func handleRequest(w http.ResponseWriter, req *http.Request) {
-	reqCount++ // no locking
+	cntReq.Add(1)
+	referrer := req.Header.Get("Referer")
 	logger.WithFields(logrus.Fields{
-		"method":  req.Method,
-		"client":  req.RemoteAddr,
-		"uri":     req.RequestURI,
-		"counter": reqCount,
-	}).Info("New request")
+		"method":   req.Method,
+		"referrer": referrer,
+		"client":   req.RemoteAddr,
+		"counter":  cntReq.Value(),
+	}).Infof("[%d] New request", cntReq.Value())
 
-	err := req.WriteProxy(os.Stdout)
-	if err != nil {
-		logger.Error(err)
+	if logger.IsLevelEnabled(logrus.DebugLevel) {
+		err := req.WriteProxy(os.Stdout)
+		if err != nil {
+			logger.Error(err)
+		}
+		fmt.Println("")
 	}
-	fmt.Println("")
+
+	if referrer == "" {
+		cntReqErrors.Add(1)
+		logger.Warnf("[%d] Request without referrer (%d)", cntReq.Value(), cntReqErrors.Value())
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{"success": false, "msg": "no referer header present"}`))
+		return
+	}
+
 	w.Header()["Content-type"] = []string{"text/plain"}
 	fmt.Fprintln(w, "Got it")
 }
