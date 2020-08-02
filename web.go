@@ -45,10 +45,10 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 		cntReqErrors.Add(1)
 		logger.Warnf("[%d] Request without referrer (%d)", cntReq.Value(), cntReqErrors.Value())
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(`{"success": false, "msg": "no referer header present"}`))
+		w.Write([]byte("{\"success\": false, \"msg\": \"no referer header present\"}\n"))
 		return
 	}
 
 	w.Header()["Content-type"] = []string{"text/plain"}
-	fmt.Fprintf(w, "%d", getCount(referrer))
+	fmt.Fprintf(w, "%d\n", getCount(referrer))
 }
