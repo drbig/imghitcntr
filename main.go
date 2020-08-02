@@ -8,8 +8,10 @@ import (
 )
 
 const (
-	VERSION = "0.0.1"
+	VERSION = `0.0.1`
 )
+
+var build = `UNKNOWN` // injected in Makefile
 
 var (
 	flagBindHostname string
@@ -21,9 +23,10 @@ func init() {
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, `Usage: %s (options...)
 imghitcntr v%s by Piotr S. Staszewski, see LICENSE.txt
+binary build by %s
 
 Options:
-`, os.Args[0], VERSION)
+`, os.Args[0], VERSION, build)
 		flag.PrintDefaults()
 	}
 	flag.StringVar(&flagBindHostname, "l", "127.0.0.1", "hostname/ip to bind to")
