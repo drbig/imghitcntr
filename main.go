@@ -7,7 +7,12 @@ import (
 )
 
 const (
-	VERSION = `0.0.6`
+	VERSION = `0.0.8`
+)
+
+const (
+	BG_COLOR = `#000`
+	FG_COLOR = `#fff`
 )
 
 var build = `UNKNOWN` // injected in Makefile
@@ -16,6 +21,8 @@ var (
 	flagBindHostname string
 	flagBindPort     int
 	flagLogLevel     string
+	flagBgColor      string
+	flagFgColor      string
 )
 
 func init() {
@@ -31,11 +38,14 @@ Options:
 	flag.StringVar(&flagBindHostname, "l", "127.0.0.1", "hostname/ip to bind to")
 	flag.IntVar(&flagBindPort, "p", 9999, "port to bind to")
 	flag.StringVar(&flagLogLevel, "loglevel", "error", "log level")
+	flag.StringVar(&flagBgColor, "bg", BG_COLOR, "background color, HTML hex string")
+	flag.StringVar(&flagFgColor, "fg", FG_COLOR, "foreground color, HTML hex string")
 }
 
 func main() {
 	flag.Parse()
 	setupLogger()
+	setupDefaultColors()
 	go runServerHTTP()
 	sigwait()
 }
