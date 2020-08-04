@@ -7,12 +7,12 @@ import (
 )
 
 const (
-	VERSION = `0.1.0`
+	VERSION = `0.2.0`
 )
 
 const (
-	BG_COLOR = `#000`
-	FG_COLOR = `#fff`
+	BG_COLOR = `#fff`
+	FG_COLOR = `#000`
 )
 
 var build = `UNKNOWN` // injected in Makefile
@@ -47,7 +47,7 @@ func main() {
 
 	setupLogger()
 	setupDefaultColors()
-	setupDigitsImg()
+	setupDigitsMask()
 
 	go runServerHTTP()
 	sigwait()

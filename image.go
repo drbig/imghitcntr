@@ -26,9 +26,9 @@ qFnGuQPK6BnKBnlqNlha07bgcqe46UYrShhLpiRLJqonGREsPExcAAA7
 `
 
 var (
-	colorBG   color.RGBA
-	colorFG   color.RGBA
-	digitsImg *image.Alpha
+	colorBG    color.RGBA
+	colorFG    color.RGBA
+	digitsMask *image.Alpha
 )
 
 func setupDefaultColors() {
@@ -49,37 +49,38 @@ func setupDefaultColors() {
 	}
 }
 
-func setupDigitsImg() {
+func setupDigitsMask() {
 	reader := base64.NewDecoder(base64.StdEncoding, strings.NewReader(DIGITS_B64))
 	src, _, err := image.Decode(reader)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: failed to parse built-in digits\n")
+		fmt.Fprintf(os.Stderr, "Error: failed to parse built-in digits data\n")
 		os.Exit(2)
 	}
 	// A paranoid person could add bounds check here if it's 10*DIGIT_W x DIGIT_H
 
-	bounds := src.Bounds() //you have defined that both src and mask are same size, and maskImg is a grayscale of the src image. So we'll use that common size.
-	digitsImg = image.NewAlpha(bounds)
+	bounds := src.Bounds()
+	digitsMask = image.NewAlpha(bounds)
 	for x := 0; x < bounds.Dx(); x++ {
 		for y := 0; y < bounds.Dy(); y++ {
 			r, _, _, _ := src.At(x, y).RGBA()
-			digitsImg.SetAlpha(x, y, color.Alpha{uint8(r)})
+			digitsMask.SetAlpha(x, y, color.Alpha{uint8(r)})
 		}
 	}
 }
 
-func genImage(hits int, bg, fg color.RGBA) (img draw.Image) {
+func genImage(hits int, bgc, fgc color.RGBA) (img draw.Image) {
 	digits := numToDigits(hits)
 	width := len(digits) * DIGIT_W
-	bgi := image.NewUniform(bg)
-	fgi := image.NewUniform(fg)
+	bg := image.NewUniform(bgc)
+	fg := image.NewUniform(fgc)
 
 	img = image.NewRGBA(image.Rect(0, 0, width, DIGIT_H))
-	draw.Draw(img, image.Rect(0, 0, width, DIGIT_H), bgi, image.Point{}, draw.Over)
+	draw.Draw(img, image.Rect(0, 0, width, DIGIT_H), bg, image.Point{}, draw.Over)
+
 	for i, digit := range digits {
-		maskPoint := image.Point{int(digit) * DIGIT_W, 0}
-		rect := image.Rect(i*DIGIT_W, 0, (i+1)*DIGIT_W, DIGIT_H)
-		draw.DrawMask(img, rect, fgi, image.Point{}, digitsImg, maskPoint, draw.Over)
+		mp := image.Point{int(digit) * DIGIT_W, 0}
+		r := image.Rect(width-(i*DIGIT_W), 0, width-((i+1)*DIGIT_W), DIGIT_H)
+		draw.DrawMask(img, r, fg, image.Point{}, digitsMask, mp, draw.Over)
 	}
 
 	return img
