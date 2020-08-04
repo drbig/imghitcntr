@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	VERSION = `0.0.8`
+	VERSION = `0.1.0`
 )
 
 const (
@@ -44,8 +44,11 @@ Options:
 
 func main() {
 	flag.Parse()
+
 	setupLogger()
 	setupDefaultColors()
+	setupDigitsImg()
+
 	go runServerHTTP()
 	sigwait()
 }

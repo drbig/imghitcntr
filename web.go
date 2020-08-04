@@ -3,6 +3,7 @@ package main
 import (
 	"expvar"
 	"fmt"
+	"image/gif"
 	"net/http"
 	"os"
 )
@@ -76,7 +77,6 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 	}
-	logger.Debugf("BG color: %v", bg)
 
 	fg := colorFG
 	if fgcs := req.FormValue(FG_COLOR_KEY); fgcs != "" {
@@ -90,9 +90,17 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 	}
-	logger.Debugf("FG color: %v", fg)
 
-	w.Header()["Content-type"] = []string{"text/plain"}
 	hits := getCount(referrer)
-	fmt.Fprintf(w, "%d -> %v\n", hits, numToDigits(hits))
+	logger.Debugf("Generating image for %d hits of %s (%v/%v)...", hits, referrer, bg, fg)
+	img := genImage(hits, bg, fg)
+
+	w.Header()["Content-type"] = []string{"image/gif"}
+	err := gif.Encode(w, img, nil)
+	if err != nil {
+		cntReqErrors.Add(1)
+		logger.Errorf("[%d] Failed to encode image (%d): %s", cntReq.Value, cntReqErrors.Value(), err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("{\"success\": false, \"msg\": \"failed to encode image, sorry\"}\n"))
+	}
 }
