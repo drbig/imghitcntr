@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	VERSION = `0.2.0`
+	VERSION = `0.2.1`
 )
 
 const (
@@ -35,7 +35,7 @@ Options:
 `, os.Args[0], VERSION, build)
 		flag.PrintDefaults()
 	}
-	flag.StringVar(&flagBindHostname, "l", "127.0.0.1", "hostname/ip to bind to")
+	flag.StringVar(&flagBindHostname, "b", "127.0.0.1", "hostname/ip to bind to")
 	flag.IntVar(&flagBindPort, "p", 9999, "port to bind to")
 	flag.StringVar(&flagLogLevel, "loglevel", "error", "log level")
 	flag.StringVar(&flagBgColor, "bg", BG_COLOR, "background color, HTML hex string")
