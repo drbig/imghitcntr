@@ -100,7 +100,7 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 	err := gif.Encode(w, img, nil)
 	if err != nil {
 		cntReqErrors.Add(1)
-		logger.Errorf("[%d] Failed to encode image (%d): %s", cntReq.Value, cntReqErrors.Value(), err)
+		logger.Errorf("[%d] Failed to encode image (%d): %s", cntReq.Value(), cntReqErrors.Value(), err)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("{\"success\": false, \"msg\": \"failed to encode image, sorry\"}\n"))
 	}
