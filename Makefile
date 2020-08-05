@@ -6,7 +6,7 @@ TGTS    := $(foreach os,$(OSES),$(foreach arch,$(ARCHS),bin/imghitcntr-$(os)-$(a
 BUILD   := $(shell echo `whoami`@`hostname -s` on `date`)
 LDFLAGS := -ldflags='-X "main.build=$(BUILD)"'
 
-.PHONY: clean dev test
+.PHONY: clean dev test benchmark
 
 all: $(TGTS) bin/checksums.md5
 
@@ -14,6 +14,9 @@ test: $(TGTS)
 
 clean:
 	@rm -f bin/*
+
+benchmark:
+	go test -bench . -benchmem
 
 dev: $(SRCS)
 	GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o imghitcntr-$@-$(VER) .
