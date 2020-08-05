@@ -25,7 +25,7 @@ var (
 
 func runServerHTTP() {
 	bind_addr := fmt.Sprintf("%s:%d", flagBindHostname, flagBindPort)
-	http.HandleFunc("/hit", handleRequest)
+	http.HandleFunc(flagEndpoint, handleRequest)
 	logger.Infof("Bind to %s", bind_addr)
 	http.ListenAndServe(bind_addr, nil)
 }
