@@ -7,13 +7,15 @@ import (
 )
 
 const (
-	VERSION = `0.3.2`
+	VERSION = `0.4.0`
 )
 
 const (
 	BG_COLOR = `#fff`
 	FG_COLOR = `#000`
 	ENDPOINT = `/hit`
+	DB_SIZE  = 32
+	DATE_FMT = `2006-01-02`
 )
 
 var build = `UNKNOWN` // injected in Makefile
@@ -25,6 +27,7 @@ var (
 	flagBgColor      string
 	flagFgColor      string
 	flagEndpoint     string
+	flagCSVPath      string
 )
 
 func init() {
@@ -43,6 +46,7 @@ Options:
 	flag.StringVar(&flagEndpoint, "endpoint", ENDPOINT, "endpoint to mount at")
 	flag.StringVar(&flagBgColor, "bg", BG_COLOR, "background color, HTML hex string")
 	flag.StringVar(&flagFgColor, "fg", FG_COLOR, "foreground color, HTML hex string")
+	flag.StringVar(&flagCSVPath, "csv", "", "path to save and load the CSV data dump")
 }
 
 func main() {
@@ -52,6 +56,14 @@ func main() {
 	setupDefaultColors()
 	setupDigitsMask()
 
+	if err := loadDB(flagCSVPath); err != nil {
+		logger.Errorf("Failed to load state: %s", err)
+	}
+
 	go runServerHTTP()
 	sigwait()
+
+	if err := saveDB(flagCSVPath); err != nil {
+		logger.Errorf("Failed to save state: %s", err)
+	}
 }
