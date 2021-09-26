@@ -1,4 +1,4 @@
-# imghitcntr [![Build Status](https://travis-ci.org/drbig/imghitcntr.svg?branch=master)](https://travis-ci.org/drbig/imghitcntr)
+# imghitcntr [![Build Status](https://app.travis-ci.com/github/drbig/imghitcntr.svg?branch=master)](https://app.travis-ci.com/github/drbig/imghitcntr)
 
 A very simple "hit counter" like in the olden days of the simpler web. Pass it
 a key, perhaps desired background and foreground colors, and presto you have an
