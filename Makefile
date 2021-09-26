@@ -19,10 +19,10 @@ benchmark:
 	go test -bench . -benchmem
 
 dev: $(SRCS)
-	GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o imghitcntr-$@-$(VER) .
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o imghitcntr-$@-$(VER) .
 
 $(TGTS): $(SRCS)
-	GOOS=$(word 2,$(subst -, ,$@)) GOARCH=$(word 3,$(subst -, ,$@)) go build $(LDFLAGS) -o $@-$(VER) .
+	CGO_ENABLED=0 GOOS=$(word 2,$(subst -, ,$@)) GOARCH=$(word 3,$(subst -, ,$@)) go build $(LDFLAGS) -o $@-$(VER) .
 
 $(SRCS):
 
